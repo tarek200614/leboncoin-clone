@@ -1,12 +1,20 @@
 <?php
-/*
- * FICHIER : pages/auth/deconnection.php
- * RÔLE    : Détruire la session et rediriger vers l'accueil
- */
+require_once __DIR__ . '/../../config/init.php';
 
-session_start();
-session_destroy();   // Supprime toutes les variables de session
+// Unset all session variables
+$_SESSION = array();
 
-header('Location: ../../index.php');
-exit;
-?>
+// Destroy the session cookie
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
+
+// Destroy the session
+session_destroy();
+
+set_flash('success', 'Vous avez été déconnecté avec succès.');
+redirect('/index.php');
