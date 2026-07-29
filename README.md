@@ -57,7 +57,6 @@ LeBonCoin-Clone/
 │
 ├── assets/
 │   ├── css/
-│   ├── js/
 │   ├── images/
 │
 ├── database/
