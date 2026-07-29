@@ -1,129 +1,122 @@
 <?php
-/*
- * FICHIER : pages/annonces/creer.php
- * RÔLE    : Permettre à un utilisateur connecté de publier une annonce
- *           avec titre, prix, description et photo obligatoires
- */
+$page_title = 'Déposer une annonce';
+require_once __DIR__ . '/../../includes/header.php';
+require_login();
 
-session_start();
-require_once '../../config/db.php';
-
-// Seul un utilisateur connecté peut créer une annonce
-if (!isset($_SESSION['utilisateur_id'])) {
-    header('Location: ../auth/connection.php');
-    exit;
-}
-
-$erreurs = [];
 $categories = $pdo->query("SELECT * FROM categories ORDER BY nom")->fetchAll();
+$erreurs = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $titre       = trim($_POST['titre'] ?? '');
+    verify_csrf();
+    
+    $titre = trim($_POST['titre'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $prix        = $_POST['prix'] ?? '';
-    $categorie   = $_POST['categorie_id'] ?? null;
+    $prix = $_POST['prix'] ?? '';
+    $categorie = $_POST['categorie_id'] ?? null;
+    $location = trim($_POST['location'] ?? '');
 
-    // Validations
-    if (empty($titre))       $erreurs[] = "Le titre est obligatoire.";
-    if (empty($description)) $erreurs[] = "La description est obligatoire.";
-    if (!is_numeric($prix) || $prix < 0) $erreurs[] = "Le prix doit être un nombre positif.";
+    if (strlen($titre) < 5) $erreurs[] = "Le titre doit faire au moins 5 caractères.";
+    if (strlen($description) < 20) $erreurs[] = "La description doit faire au moins 20 caractères.";
+    if (!is_numeric($prix) || $prix <= 0) $erreurs[] = "Le prix doit être un nombre positif.";
 
-    // ---- TRAITEMENT DE LA PHOTO ----
-    $nom_photo = '';
-    if (empty($_FILES['photo']['name'])) {
-        $erreurs[] = "La photo est obligatoire.";
-    } else {
-        // Extensions autorisées
-        $extensions_ok = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $extension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-
-        if (!in_array($extension, $extensions_ok)) {
-            $erreurs[] = "Format de photo non autorisé (jpg, png, gif, webp uniquement).";
-        } elseif ($_FILES['photo']['size'] > 5 * 1024 * 1024) {
-            // Limite à 5 Mo
-            $erreurs[] = "La photo ne doit pas dépasser 5 Mo.";
-        } else {
-            // Générer un nom unique pour éviter les doublons
-            $nom_photo = uniqid('photo_') . '.' . $extension;
-            $dossier   = '../../assets/uploads/';
-            move_uploaded_file($_FILES['photo']['tmp_name'], $dossier . $nom_photo);
+    // Handle Multiple Images
+    $uploaded_images = [];
+    if (isset($_FILES['photos']) && $_FILES['photos']['error'][0] === UPLOAD_ERR_NO_FILE) {
+        $erreurs[] = "Au moins une photo est obligatoire.";
+    } elseif (isset($_FILES['photos'])) {
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'webp'];
+        $max_size = 5 * 1024 * 1024; // 5MB
+        
+        foreach ($_FILES['photos']['name'] as $key => $name) {
+            if ($_FILES['photos']['error'][$key] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                $tmp_name = $_FILES['photos']['tmp_name'][$key];
+                
+                // Security: Validate MIME type
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $tmp_name);
+                finfo_close($finfo);
+                
+                if (!in_array($ext, $allowed_ext) || !str_starts_with($mime, 'image/')) {
+                    $erreurs[] = "Format de fichier invalide : $name";
+                } elseif ($_FILES['photos']['size'][$key] > $max_size) {
+                    $erreurs[] = "Le fichier $name dépasse 5 Mo.";
+                } else {
+                    $new_name = uniqid('img_', true) . '.' . $ext;
+                    $dest = __DIR__ . '/../../assets/uploads/' . $new_name;
+                    if (move_uploaded_file($tmp_name, $dest)) {
+                        $uploaded_images[] = $new_name;
+                    }
+                }
+            }
         }
     }
 
-    if (empty($erreurs)) {
-        $stmt = $pdo->prepare("
-            INSERT INTO annonces (utilisateur_id, categorie_id, titre, description, prix, photo)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
-        $stmt->execute([
-            $_SESSION['utilisateur_id'],
-            $categorie ?: null,
-            $titre,
-            $description,
-            $prix,
-            $nom_photo
-        ]);
+    if (empty($erreurs) && !empty($uploaded_images)) {
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare("INSERT INTO annonces (utilisateur_id, categorie_id, titre, description, prix, location) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$_SESSION['utilisateur_id'], $categorie ?: null, $titre, $description, $prix, $location]);
+            $annonce_id = $pdo->lastInsertId();
 
-        // Récupérer l'ID de l'annonce créée et rediriger vers elle
-        $id = $pdo->lastInsertId();
-        header("Location: detail.php?id=$id&created=1");
-        exit;
+            $stmt_img = $pdo->prepare("INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES (?, ?, ?)");
+            foreach ($uploaded_images as $index => $img_name) {
+                $is_primary = ($index === 0) ? 1 : 0;
+                $stmt_img->execute([$annonce_id, $img_name, $is_primary]);
+            }
+            
+            $pdo->commit();
+            set_flash('success', 'Annonce publiée avec succès !');
+            redirect("/pages/annonces/detail.php?id=$annonce_id");
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $erreurs[] = "Erreur lors de la sauvegarde : " . $e->getMessage();
+        }
     }
 }
-
-require_once '../../includes/header.php';
 ?>
 
-<main class="container">
-    <div class="form-box form-large">
-        <h1>Publier une annonce</h1>
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1 style="margin-bottom: 1.5rem;">Déposer une annonce</h1>
+    <?php if (!empty($erreurs)): ?>
+        <div class="alert alert-error"><ul><?php foreach ($erreurs as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul></div>
+    <?php endif; ?>
 
-        <?php if (!empty($erreurs)): ?>
-            <div class="alert alert-erreur">
-                <ul><?php foreach ($erreurs as $e): ?>
-                    <li><?= htmlspecialchars($e) ?></li>
-                <?php endforeach; ?></ul>
-            </div>
-        <?php endif; ?>
-
-        <!-- enctype obligatoire pour l'upload de fichier -->
-        <form method="POST" action="" enctype="multipart/form-data">
-
-            <div class="champ">
-                <label>Titre de l'annonce *</label>
-                <input type="text" name="titre" value="<?= htmlspecialchars($titre ?? '') ?>" required>
-            </div>
-
-            <div class="champ">
-                <label>Catégorie</label>
-                <select name="categorie_id">
-                    <option value="">-- Choisir --</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['nom']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="champ">
-                <label>Prix (€) *</label>
-                <input type="number" name="prix" min="0" step="0.01"
-                       value="<?= htmlspecialchars($prix ?? '') ?>" required>
-            </div>
-
-            <div class="champ">
-                <label>Description *</label>
-                <textarea name="description" rows="6" required><?= htmlspecialchars($description ?? '') ?></textarea>
-            </div>
-
-            <div class="champ">
-                <label>Photo * <small>(jpg, png — max 5 Mo)</small></label>
-                <input type="file" name="photo" accept="image/*" required>
-            </div>
-
-            <button type="submit" class="btn btn-principal">Publier l'annonce</button>
-        </form>
-    </div>
-</main>
-
-<?php require_once '../../includes/footer.php'; ?>
+    <form method="POST" action="" enctype="multipart/form-data" style="background: var(--bg-primary); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border);">
+        <?= csrf_field() ?>
+        <div class="form-group">
+            <label class="form-label" for="titre">Titre *</label>
+            <input type="text" id="titre" name="titre" class="form-input" required value="<?= e($_POST['titre'] ?? '') ?>">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="categorie_id">Catégorie</label>
+            <select id="categorie_id" name="categorie_id" class="form-select">
+                <option value="">-- Sélectionner --</option>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?= $cat['id'] ?>" <?= (($_POST['categorie_id'] ?? '') == $cat['id']) ? 'selected' : '' ?>><?= e($cat['nom']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="prix">Prix (€) *</label>
+            <input type="number" step="0.01" id="prix" name="prix" class="form-input" required value="<?= e($_POST['prix'] ?? '') ?>">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="location">Localisation</label>
+            <input type="text" id="location" name="location" class="form-input" value="<?= e($_POST['location'] ?? '') ?>">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="description">Description *</label>
+            <textarea id="description" name="description" rows="5" class="form-textarea" required><?= e($_POST['description'] ?? '') ?></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="photos">Photos (max 5) *</label>
+            <input type="file" id="photos" name="photos[]" class="form-input" multiple accept="image/png, image/jpeg, image/webp" required>
+            <small style="color: var(--text-secondary);">Formats acceptés : JPG, PNG, WEBP. Max 5 Mo par image.</small>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Publier l'annonce</button>
+            <a href="/index.php" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
