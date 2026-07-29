@@ -1,11 +1,22 @@
 <?php
 declare(strict_types=1);
+
+// Secure Session Configuration (Must be before session_start)
+session_set_cookie_params([
+    'lifetime' => 3600,
+    'path' => '/',
+    'domain' => '',
+    'secure' => true,      // Requires HTTPS in production
+    'httponly' => true,    // Prevents JS access to session cookie
+    'samesite' => 'Strict' // Prevents CSRF via cross-site cookies
+]);
 session_start();
 
 // Security Headers
 header("X-Content-Type-Options: nosniff");
 header("X-Frame-Options: DENY");
 header("X-XSS-Protection: 1; mode=block");
+header("Referrer-Policy: strict-origin-when-cross-origin");
 
 // Generate CSRF token
 if (empty($_SESSION['csrf_token'])) {
