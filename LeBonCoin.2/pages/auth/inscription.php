@@ -1,127 +1,72 @@
 <?php
-/*
- * FICHIER : pages/auth/inscription.php
- * RÔLE    : Afficher le formulaire d'inscription et traiter les données
- */
+$page_title = 'Inscription';
+require_once __DIR__ . '/../../includes/header.php';
 
-session_start();                          // Démarre la session PHP
-require_once '../../config/db.php';       // Connexion BDD
+$erreurs = [];
+$succes = '';
 
-$erreurs = [];   // Tableau pour stocker les messages d'erreur
-$succes  = '';   // Message de succès
-
-// On traite le formulaire seulement si l'utilisateur a cliqué sur "S'inscrire"
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf();
+    
+    $pseudo = trim($_POST['pseudo'] ?? '');
+    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+    $password = $_POST['password'] ?? '';
+    $password_confirm = $_POST['password_confirm'] ?? '';
 
-    // Récupérer et nettoyer les données du formulaire
-    // trim() supprime les espaces en début/fin de chaîne
-    $email       = trim($_POST['email'] ?? '');
-    $pseudo      = trim($_POST['pseudo'] ?? '');
-    $mot_de_passe = $_POST['mot_de_passe'] ?? '';
+    if (strlen($pseudo) < 3) $erreurs[] = "Le pseudo doit faire au moins 3 caractères.";
+    if (!$email) $erreurs[] = "L'email n'est pas valide.";
+    if (strlen($password) < 8) $erreurs[] = "Le mot de passe doit faire au moins 8 caractères.";
+    if ($password !== $password_confirm) $erreurs[] = "Les mots de passe ne correspondent pas.";
 
-    // ---- VALIDATIONS ----
-
-    // L'email est-il rempli ?
-    if (empty($email)) {
-        $erreurs[] = "L'email est obligatoire.";
-    }
-    // L'email est-il valide ? (ex: test@gmail.com)
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $erreurs[] = "L'email n'est pas valide.";
-    }
-
-    // Le pseudo est-il rempli ?
-    if (empty($pseudo)) {
-        $erreurs[] = "Le pseudo est obligatoire.";
-    }
-
-    // Le mot de passe fait-il au moins 10 caractères ? (requis dans le cahier des charges)
-    if (strlen($mot_de_passe) < 10) {
-        $erreurs[] = "Le mot de passe doit contenir au moins 10 caractères.";
-    }
-
-    // Si aucune erreur, on peut créer le compte
     if (empty($erreurs)) {
-
-        // Vérifier si l'email existe déjà en base de données
-        // REQUÊTE PRÉPARÉE : on n'insère jamais directement les variables dans le SQL !
         $stmt = $pdo->prepare("SELECT id FROM utilisateurs WHERE email = ?");
         $stmt->execute([$email]);
-
         if ($stmt->fetch()) {
-            // L'email est déjà utilisé
             $erreurs[] = "Cet email est déjà utilisé.";
         } else {
-            // Hasher le mot de passe avant de le stocker
-            // password_hash() est la fonction sécurisée recommandée
-            $hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
-
-            // Insérer le nouvel utilisateur
-            $stmt = $pdo->prepare("
-                INSERT INTO utilisateurs (email, pseudo, mot_de_passe)
-                VALUES (?, ?, ?)
-            ");
-            $stmt->execute([$email, $pseudo, $hash]);
-
-            $succes = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("INSERT INTO utilisateurs (email, pseudo, mot_de_passe) VALUES (?, ?, ?)");
+            if ($stmt->execute([$email, $pseudo, $hash])) {
+                set_flash('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.');
+                redirect('/pages/auth/connection.php');
+            } else {
+                $erreurs[] = "Une erreur est survenue lors de l'inscription.";
+            }
         }
     }
 }
-
-require_once '../../includes/header.php';
 ?>
 
-<main class="container">
-    <div class="form-box">
-        <h1>Créer un compte</h1>
+<div style="max-width: 400px; margin: 0 auto; background: var(--bg-primary); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border);">
+    <h1 style="margin-bottom: 1.5rem; font-size: 1.5rem; text-align: center;">Créer un compte</h1>
+    
+    <?php if (!empty($erreurs)): ?>
+        <div class="alert alert-error"><ul><?php foreach ($erreurs as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul></div>
+    <?php endif; ?>
 
-        <!-- Affichage des erreurs -->
-        <?php if (!empty($erreurs)): ?>
-            <div class="alert alert-erreur">
-                <ul>
-                    <?php foreach ($erreurs as $erreur): ?>
-                        <li><?= htmlspecialchars($erreur) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
-        <!-- Affichage du succès -->
-        <?php if ($succes): ?>
-            <div class="alert alert-succes">
-                <?= htmlspecialchars($succes) ?>
-                <a href="connection.php">→ Se connecter</a>
-            </div>
-        <?php endif; ?>
-
-        <!-- Formulaire POST -->
-        <form method="POST" action="">
-            <div class="champ">
-                <label for="pseudo">Pseudo</label>
-                <!-- htmlspecialchars() pour éviter les injections XSS -->
-                <input type="text" id="pseudo" name="pseudo"
-                       value="<?= htmlspecialchars($pseudo ?? '') ?>"
-                       placeholder="VotreNom123" required>
-            </div>
-
-            <div class="champ">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email"
-                       value="<?= htmlspecialchars($email ?? '') ?>"
-                       placeholder="exemple@gmail.com" required>
-            </div>
-
-            <div class="champ">
-                <label for="mot_de_passe">Mot de passe <small>(10 caractères minimum)</small></label>
-                <input type="password" id="mot_de_passe" name="mot_de_passe"
-                       minlength="10" required>
-            </div>
-
-            <button type="submit" class="btn btn-principal">S'inscrire</button>
-        </form>
-
-        <p class="lien-bas">Déjà un compte ? <a href="connection.php">Se connecter</a></p>
-    </div>
-</main>
-
-<?php require_once '../../includes/footer.php'; ?>
+    <form method="POST" action="">
+        <?= csrf_field() ?>
+        <div class="form-group">
+            <label class="form-label" for="pseudo">Pseudo</label>
+            <input type="text" id="pseudo" name="pseudo" class="form-input" required value="<?= e($_POST['pseudo'] ?? '') ?>">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-input" required value="<?= e($_POST['email'] ?? '') ?>">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" class="form-input" required>
+            <div class="strength-meter"><div class="strength-meter-fill" id="strength-meter"></div></div>
+            <small id="strength-text" style="color: var(--text-secondary); font-size: 0.75rem;"></small>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="password_confirm">Confirmer le mot de passe</label>
+            <input type="password" id="password_confirm" name="password_confirm" class="form-input" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">S'inscrire</button>
+    </form>
+    <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem;">
+        Déjà un compte ? <a href="connection.php" style="color: var(--accent);">Se connecter</a>
+    </p>
+</div>
