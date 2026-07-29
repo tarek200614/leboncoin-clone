@@ -86,10 +86,27 @@ else $condition = $conditions['bon'];
                 <p style="color: var(--text-secondary); white-space: pre-line;"><?= nl2br(e($annonce['description'])) ?></p>
             </div>
 
-            <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
-                <p style="font-weight: 600; margin-bottom: 0.25rem;">Vendu par : <?= e($annonce['pseudo']) ?></p>
-                <p style="font-size: 0.875rem; color: var(--text-secondary);">Annonce publiée le <?= date('d/m/Y', strtotime($annonce['date_creation'])) ?> • <?= $annonce['views'] ?> vues</p>
-            </div>
+<div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <div style="width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem;">
+            <?= strtoupper(substr($annonce['pseudo'], 0, 1)) ?>
+        </div>
+        <div>
+            <h3 style="font-weight: 600; margin-bottom: 0.25rem;"><?= e($annonce['pseudo']) ?></h3>
+            <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                Membre depuis <?= date('Y', strtotime($annonce['date_creation'])) ?>
+            </p>
+        </div>
+    </div>
+    <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">
+            <strong>Localisation:</strong> <?= e($annonce['location']) ?>
+        </p>
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+            <strong>Vues:</strong> <?= $annonce['views'] ?>
+        </p>
+    </div>
+</div>
 
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <?php if (isset($_SESSION['utilisateur_id']) && $_SESSION['utilisateur_id'] !== $annonce['user_id']): ?>
