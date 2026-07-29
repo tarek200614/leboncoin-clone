@@ -38,7 +38,29 @@ if (isset($_SESSION['utilisateur_id'])) {
     $est_favori = (bool)$stmt_fav->fetch();
 }
 ?>
+<?php
+// Add this after fetching $annonce data
+$conditions = [
+    'neuf' => ['label' => 'Neuf', 'class' => 'badge-success'],
+    'excellent' => ['label' => 'Excellent état', 'class' => 'badge-success'],
+    'tres_bon' => ['label' => 'Très bon état', 'class' => 'badge-info'],
+    'bon' => ['label' => 'Bon état', 'class' => 'badge-warning'],
+    'correct' => ['label' => 'État correct', 'class' => 'badge-secondary']
+];
 
+// For demo, assign conditions based on price
+if ($annonce['prix'] > 10000) $condition = $conditions['excellent'];
+elseif ($annonce['prix'] > 500) $condition = $conditions['tres_bon'];
+else $condition = $conditions['bon'];
+?>
+
+<!-- Add this in the detail page, near the price -->
+<div style="margin-bottom: 1rem;">
+    <span class="badge <?= $condition['class'] ?>"><?= $condition['label'] ?></span>
+    <span style="color: var(--text-secondary); font-size: 0.875rem; margin-left: 1rem;">
+        Publié le <?= date('d/m/Y à H:i', strtotime($annonce['date_creation'])) ?>
+    </span>
+</div>
 <div style="max-width: 900px; margin: 0 auto;">
     <a href="/pages/annonces/liste.php" style="color: var(--accent); text-decoration: none; margin-bottom: 1rem; display: inline-block;">← Retour aux annonces</a>
     
@@ -90,4 +112,3 @@ if (isset($_SESSION['utilisateur_id'])) {
         </div>
     </div>
 </div>
-      
