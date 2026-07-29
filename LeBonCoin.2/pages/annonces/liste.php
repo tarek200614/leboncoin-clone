@@ -1,182 +1,113 @@
 <?php
-/*
- * FICHIER : pages/annonces/liste.php
- * RÔLE    : Afficher toutes les annonces sous forme de cartes
- *           avec possibilité de filtrer par catégorie, prix, mot-clé
- *           BONUS : pagination + recherche full-text
- */
+$page_title = 'Toutes les annonces';
+$og_desc = 'Parcourez les dernières petites annonces de véhicules, immobilier, électronique et plus.';
+require_once __DIR__ . '/../../includes/header.php';
 
-session_start();
-require_once '../../config/db.php';
+// Pagination & Filter Setup
+$page = max(1, (int)($_GET['page'] ?? 1));
+$per_page = 12;
+$offset = ($page - 1) * $per_page;
 
-// ---- RÉCUPÉRATION DES CATÉGORIES (pour le menu de filtre) ----
-$stmt_cats = $pdo->query("SELECT * FROM categories ORDER BY nom");
-$categories = $stmt_cats->fetchAll();
+$search = trim($_GET['search'] ?? '');
+$categorie_id = filter_var($_GET['categorie'] ?? 0, FILTER_VALIDATE_INT);
 
-// ---- CONSTRUCTION DE LA REQUÊTE AVEC FILTRES ----
-$sql    = "SELECT a.*, u.pseudo, c.nom AS categorie_nom
-           FROM annonces a
-           JOIN utilisateurs u ON a.utilisateur_id = u.id
-           LEFT JOIN categories c ON a.categorie_id = c.id
-           WHERE 1=1";
-
-$sql_count = "SELECT COUNT(*) FROM annonces a
-              JOIN utilisateurs u ON a.utilisateur_id = u.id
-              LEFT JOIN categories c ON a.categorie_id = c.id
-              WHERE 1=1";
-
+// Build Query
+$where = [];
 $params = [];
 
-// Filtre par catégorie
-$filtre_categorie = $_GET['categorie'] ?? '';
-if (!empty($filtre_categorie)) {
-    $sql .= " AND a.categorie_id = ?";
-    $sql_count .= " AND a.categorie_id = ?";
-    $params[] = $filtre_categorie;
+if ($search !== '') {
+    $where[] = "(a.titre LIKE :search OR a.description LIKE :search)";
+    $params[':search'] = '%' . $search . '%';
+}
+if ($categorie_id > 0) {
+    $where[] = "a.categorie_id = :categorie";
+    $params[':categorie'] = $categorie_id;
 }
 
-// Filtre par prix minimum
-$filtre_prix_min = $_GET['prix_min'] ?? '';
-if (is_numeric($filtre_prix_min)) {
-    $sql .= " AND a.prix >= ?";
-    $sql_count .= " AND a.prix >= ?";
-    $params[] = $filtre_prix_min;
+$where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+// Count total for pagination
+$count_stmt = $pdo->prepare("SELECT COUNT(*) FROM annonces a $where_sql");
+$count_stmt->execute($params);
+$total_ads = (int)$count_stmt->fetchColumn();
+$total_pages = ceil($total_ads / $per_page);
+
+// Fetch ads
+$query = "SELECT a.id, a.titre, a.prix, a.date_creation, a.location, img.image_path, u.pseudo, c.nom AS cat_nom
+          FROM annonces a
+          JOIN utilisateurs u ON a.utilisateur_id = u.id
+          LEFT JOIN annonce_images img ON a.id = img.annonce_id AND img.is_primary = 1
+          LEFT JOIN categories c ON a.categorie_id = c.id
+          $where_sql
+          ORDER BY a.date_creation DESC
+          LIMIT :limit OFFSET :offset";
+
+$stmt = $pdo->prepare($query);
+$stmt->bindValue(':limit', $per_page, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+foreach ($params as $key => $val) {
+    $stmt->bindValue($key, $val);
 }
-
-// Filtre par prix maximum
-$filtre_prix_max = $_GET['prix_max'] ?? '';
-if (is_numeric($filtre_prix_max)) {
-    $sql .= " AND a.prix <= ?";
-    $sql_count .= " AND a.prix <= ?";
-    $params[] = $filtre_prix_max;
-}
-
-// BONUS : Filtre par mot-clé (titre ou description)
-$filtre_q = trim($_GET['q'] ?? '');
-if (!empty($filtre_q)) {
-    $sql .= " AND (a.titre LIKE ? OR a.description LIKE ?)";
-    $sql_count .= " AND (a.titre LIKE ? OR a.description LIKE ?)";
-    $params[] = '%' . $filtre_q . '%';
-    $params[] = '%' . $filtre_q . '%';
-}
-
-// BONUS : Pagination
-$par_page   = 9;
-$page       = max(1, intval($_GET['page'] ?? 1));
-$total_stmt = $pdo->prepare($sql_count);
-$total_stmt->execute($params);
-$total      = (int) $total_stmt->fetchColumn();
-$nb_pages   = max(1, ceil($total / $par_page));
-$page       = min($page, $nb_pages);
-$offset     = ($page - 1) * $par_page;
-
-// Tri : les plus récentes en premier
-$sql .= " ORDER BY a.date_creation DESC LIMIT ? OFFSET ?";
-
-$stmt = $pdo->prepare($sql);
-// Binder les paramètres normaux (catégorie, prix, mot-clé)
-$i = 1;
-foreach ($params as $val) {
-    $stmt->bindValue($i++, $val);
-}
-// LIMIT et OFFSET doivent être bindés comme PDO::PARAM_INT (sinon MySQL les met entre quotes)
-$stmt->bindValue($i++, (int) $par_page, PDO::PARAM_INT);
-$stmt->bindValue($i++, (int) $offset,   PDO::PARAM_INT);
 $stmt->execute();
-$annonces = $stmt->fetchAll();
+$ads = $stmt->fetchAll();
 
-require_once '../../includes/header.php';
+$categories = $pdo->query("SELECT * FROM categories ORDER BY nom")->fetchAll();
 ?>
 
-<main class="container">
-    <h1>Toutes les annonces
-        <?php if ($total > 0): ?>
-            <small style="font-size:0.85rem;color:var(--gris)">(<?= $total ?> résultat<?= $total > 1 ? 's' : '' ?>)</small>
-        <?php endif; ?>
-    </h1>
-
-    <!-- FORMULAIRE DE FILTRAGE -->
-    <form method="GET" action="" class="filtres">
-        <!-- BONUS : Champ recherche par mot-clé -->
-        <input type="text" name="q" placeholder="🔍 Mot-clé..." value="<?= htmlspecialchars($filtre_q) ?>">
-
-        <select name="categorie">
-            <option value="">Toutes les catégories</option>
+<div class="search-bar-container">
+    <form method="GET" action="" class="search-form" role="search">
+        <input type="text" name="search" placeholder="Rechercher une annonce..." class="form-input" value="<?= e($search) ?>" aria-label="Recherche textuelle">
+        <select name="categorie" class="form-select" aria-label="Filtrer par catégorie">
+            <option value="0">Toutes les catégories</option>
             <?php foreach ($categories as $cat): ?>
-                <option value="<?= $cat['id'] ?>"
-                    <?= ($filtre_categorie == $cat['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($cat['nom']) ?>
-                </option>
+                <option value="<?= $cat['id'] ?>" <?= $categorie_id === $cat['id'] ? 'selected' : '' ?>><?= e($cat['nom']) ?></option>
             <?php endforeach; ?>
         </select>
-
-        <input type="number" name="prix_min" placeholder="Prix min (€)"
-               value="<?= htmlspecialchars($filtre_prix_min) ?>">
-
-        <input type="number" name="prix_max" placeholder="Prix max (€)"
-               value="<?= htmlspecialchars($filtre_prix_max) ?>">
-
-        <button type="submit" class="btn btn-filtre">Filtrer</button>
-        <a href="liste.php" class="btn btn-secondaire">Réinitialiser</a>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
     </form>
+</div>
 
-    <!-- GRILLE DE CARTES D'ANNONCES -->
-    <?php if (empty($annonces)): ?>
-        <p class="vide">Aucune annonce trouvée.</p>
-    <?php else: ?>
-        <div class="grille-annonces">
-            <?php foreach ($annonces as $annonce): ?>
-                <div class="carte-annonce">
-                    <a href="detail.php?id=<?= $annonce['id'] ?>">
-                        <img src="../../assets/uploads/<?= htmlspecialchars($annonce['photo']) ?>"
-                             alt="<?= htmlspecialchars($annonce['titre']) ?>"
-                             class="carte-photo">
-                    </a>
-
-                    <div class="carte-corps">
-                        <?php if ($annonce['categorie_nom']): ?>
-                            <span class="badge"><?= htmlspecialchars($annonce['categorie_nom']) ?></span>
-                        <?php endif; ?>
-
-                        <h2 class="carte-titre">
-                            <a href="detail.php?id=<?= $annonce['id'] ?>">
-                                <?= htmlspecialchars($annonce['titre']) ?>
-                            </a>
-                        </h2>
-
-                        <p class="carte-prix"><?= number_format($annonce['prix'], 2, ',', ' ') ?> €</p>
-                        <p class="carte-vendeur">Par <?= htmlspecialchars($annonce['pseudo']) ?></p>
+<?php if (empty($ads)): ?>
+    <div class="empty-state">
+        <h2>Aucune annonce trouvée</h2>
+        <p>Essayez de modifier vos critères de recherche ou <a href="/pages/annonces/creer.php">déposez la première annonce</a>.</p>
+    </div>
+<?php else: ?>
+    <div class="grid">
+        <?php foreach ($ads as $ad): ?>
+            <article class="card">
+                <a href="/pages/annonces/detail.php?id=<?= $ad['id'] ?>">
+                    <?php if ($ad['image_path']): ?>
+                        <img src="/assets/uploads/<?= e($ad['image_path']) ?>" alt="<?= e($ad['titre']) ?>" class="card-img" loading="lazy">
+                    <?php else: ?>
+                        <div class="card-img card-img-placeholder" aria-hidden="true">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </div>
+                    <?php endif; ?>
+                </a>
+                <div class="card-body">
+                    <div class="card-category"><?= e($ad['cat_nom'] ?? 'Divers') ?></div>
+                    <h2 class="card-title"><a href="/pages/annonces/detail.php?id=<?= $ad['id'] ?>"><?= e($ad['titre']) ?></a></h2>
+                    <div class="card-price"><?= number_format($ad['prix'], 2, ',', ' ') ?> €</div>
+                    <div class="card-meta">
+                        <span><?= e($ad['location'] ?: 'Non spécifié') ?></span> • 
+                        <span><?= date('d/m/Y', strtotime($ad['date_creation'])) ?></span>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
+            </article>
+        <?php endforeach; ?>
+    </div>
 
-        <!-- BONUS : Pagination -->
-        <?php if ($nb_pages > 1): ?>
-            <div class="pagination">
-                <?php
-                // Construire les paramètres GET sans 'page'
-                $get_params = $_GET;
-                unset($get_params['page']);
-                $base_url = '?' . http_build_query($get_params) . '&page=';
-                ?>
-                <?php if ($page > 1): ?>
-                    <a href="<?= $base_url . ($page - 1) ?>" class="btn btn-secondaire">← Précédent</a>
-                <?php endif; ?>
-
-                <?php for ($i = 1; $i <= $nb_pages; $i++): ?>
-                    <a href="<?= $base_url . $i ?>"
-                       class="btn <?= ($i === $page) ? 'btn-principal' : 'btn-secondaire' ?>">
-                        <?= $i ?>
-                    </a>
-                <?php endfor; ?>
-
-                <?php if ($page < $nb_pages): ?>
-                    <a href="<?= $base_url . ($page + 1) ?>" class="btn btn-secondaire">Suivant →</a>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+    <?php if ($total_pages > 1): ?>
+        <nav class="pagination" aria-label="Pagination des annonces">
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="?page=<?= $i ?><?= $search ? '&search=' . urlencode($search) : '' ?><?= $categorie_id ? '&categorie=' . $categorie_id : '' ?>" 
+                   class="page-link <?= $i === $page ? 'active' : '' ?>" 
+                   <?= $i === $page ? 'aria-current="page"' : '' ?>>
+                   <?= $i ?>
+                </a>
+            <?php endfor; ?>
+        </nav>
     <?php endif; ?>
-</main>
+<?php endif; ?>
 
-<?php require_once '../../includes/footer.php'; ?>
