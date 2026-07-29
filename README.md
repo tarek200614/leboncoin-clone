@@ -56,20 +56,23 @@ It was developed to strengthen practical skills in full-stack web development us
 LeBonCoin-Clone/
 │
 ├── assets/
-│   ├── css/
-│   ├── images/
-│
-├── database/
-│
+│   ├── css/style.css       # Modern, responsive, dark-mode ready
+│   ├── js/main.js          # Vanilla JS (password strength, auto-hide alerts)
+│   └── uploads/            # Secured media storage (.htaccess protected)
+├── config/
+│   ├── db.php              # PDO connection with strict error handling
+│   └── init.php            # Centralized bootstrapping, security headers, helpers
 ├── includes/
-│
+│   ├── header.php          # Dynamic SEO, OG tags, navigation
+│   └── footer.php
 ├── pages/
-│
-├── index.php
-│
-├── README.md
-│
-└── LICENSE
+│   ├── admin/              # Admin-only routes (dashboard, users)
+│   ├── annonces/           # CRUD, listing, detail, favorites
+│   ├── auth/               # Registration, login, logout
+│   └── messages/           # Internal messaging system
+├── database.sql            # Normalized schema with indexes and constraints
+├── index.php               # Landing page
+└── README.md
 ```
 
 ---
