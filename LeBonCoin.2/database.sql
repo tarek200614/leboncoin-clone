@@ -143,3 +143,49 @@ INSERT INTO annonces (utilisateur_id, categorie_id, titre, description, prix, lo
 (1, 9, 'Lot de 15 livres universitaires - Économie/Gestion',
 'Vends lot complet de manuels universitaires licence Économie-Gestion. Livres en très bon état, peu utilisés. Au programme: Microéconomie (Varian), Macroéconomie (Mankiw), Statistiques, Comptabilité, Droit des sociétés, Marketing, Finance d''entreprise. Valeur neuve: environ 600€. Idéal étudiants L1/L2/L3. Remise en main propre Lyon ou envoi possible (frais de port en sus). Possibilité vente à l''unité, me contacter.',
 120, 'Lyon (69000)', DATE_SUB(NOW(), INTERVAL 8 DAY), 38);
+-- Assign images to annonces (annonce_id will be 1-9 based on insertion order)
+
+-- Renault Clio (annonce_id = 1)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(1, 'clio-1.jpg', 1),
+(1, 'clio-2.jpg', 0),
+(1, 'clio-3.jpg', 0);
+
+-- MacBook Pro (annonce_id = 2)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(2, 'macbook-1.jpg', 1),
+(2, 'macbook-2.jpg', 0),
+(2, 'macbook-3.jpg', 0);
+
+-- Appartement (annonce_id = 3)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(3, 'appartement-1.jpg', 1),
+(3, 'appartement-2.jpg', 0),
+(3, 'appartement-3.jpg', 0),
+(3, 'appartement-4.jpg', 0);
+
+-- Nike Jordan (annonce_id = 4)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(4, 'jordan-1.jpg', 1),
+(4, 'jordan-2.jpg', 0);
+
+-- Canapé (annonce_id = 5)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(5, 'canape-1.jpg', 1),
+(5, 'canape-2.jpg', 0),
+(5, 'canape-3.jpg', 0);
+
+-- Vélo (annonce_id = 6)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(6, 'velo-1.jpg', 1),
+(6, 'velo-2.jpg', 0),
+(6, 'velo-3.jpg', 0);
+
+-- Cours guitare (annonce_id = 8)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(8, 'guitare-1.jpg', 1),
+(8, 'guitare-2.jpg', 0);
+
+-- Livres (annonce_id = 9)
+INSERT INTO annonce_images (annonce_id, image_path, is_primary) VALUES
+(9, 'livres-1.jpg', 1);
