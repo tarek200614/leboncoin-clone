@@ -80,7 +80,7 @@ LeBonCoin-Clone/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/LeBonCoin-Clone.git
+git clone https:/tarek200614/github.com//LeBonCoin-Clone.git
 ```
 
 ### 2. Navigate to the project
@@ -118,7 +118,7 @@ Password
 Open your browser and navigate to:
 
 ```
-http://localhost/LeBonCoin-Clone/
+http://localhost:8888/LeBonCoin-Clone/
 ```
 
 ---
