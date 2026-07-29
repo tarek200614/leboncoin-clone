@@ -79,4 +79,14 @@ CREATE TABLE messages (
     FOREIGN KEY (destinataire_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     INDEX idx_destinataire_lu (destinataire_id, lu)
 );
-
+-- Insert realistic French users
+INSERT INTO utilisateurs (email, pseudo, mot_de_passe, role, status, last_login) VALUES
+('jean.martin@email.fr', 'JeanMartin75', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('sophie.bernard@email.fr', 'SophieB_Lyon', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('lucas.moreau@email.fr', 'LucasMoreau', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('emma.dubois@email.fr', 'EmmaDubois33', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('thomas.petit@email.fr', 'ThomasPetit', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('marie.rousseau@email.fr', 'MarieR_Paris', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('nicolas.laurent@email.fr', 'NicolasLaurent', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('camille.simon@email.fr', 'CamilleSimon', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', 'active', NOW()),
+('admin@leboncoin-clone.fr', 'AdminLBC', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active', NOW());
