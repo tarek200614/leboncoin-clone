@@ -82,13 +82,13 @@ LeBonCoin-Clone/
 ### 1. Clone the repository
 
 ```bash
-git clone https:/tarek200614/github.com//LeBonCoin-Clone.git
+git clone https:/tarek200614/github.com//leboncoin-clone.git
 ```
 
 ### 2. Navigate to the project
 
 ```bash
-cd LeBonCoin-Clone
+cd leboncoin-clone
 ```
 
 ### 3. Start your local server
@@ -120,7 +120,7 @@ Password
 Open your browser and navigate to:
 
 ```
-http://localhost:8888/LeBonCoin-Clone/
+http://localhost:8888/leboncoin-clone/
 ```
 
 ---
