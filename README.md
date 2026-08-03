@@ -130,7 +130,7 @@ http://localhost:8888/leboncoin-clone/
 > Add screenshots of:
 
 - Home Page
-- <img width="572" height="472" alt="home page " src="https://github.com/user-attachments/assets/8c36a9f9-86ea-4f68-91d1-e51746aa6573" />
+- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/800d0d23-0f44-4b6e-a309-71915e70a520" />
 - Login
 - <img width="572" height="472" alt="login" src="https://github.com/user-attachments/assets/fe0fbd29-2ba7-4495-a1ee-eb0a6608c2f7" />
 - Registration
