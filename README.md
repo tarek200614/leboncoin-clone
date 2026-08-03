@@ -132,7 +132,7 @@ http://localhost:8888/leboncoin-clone/
 - Home Page
 - <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/800d0d23-0f44-4b6e-a309-71915e70a520" />
 - Login
-- <img width="572" height="472" alt="login" src="https://github.com/user-attachments/assets/fe0fbd29-2ba7-4495-a1ee-eb0a6608c2f7" />
+- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/fe2af27f-8dec-4c38-b3a4-c91bd2f6ee37" />
 - Registration
 - <img width="572" height="472" alt="registration" src="https://github.com/user-attachments/assets/9dffbfa7-ce72-48f8-8126-88ea7940a4e5" />
 - Product Listings
