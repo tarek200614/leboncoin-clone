@@ -132,15 +132,15 @@ http://localhost:8888/leboncoin-clone/
 - Home Page
 - <img width="572" height="472" alt="home page " src="https://github.com/user-attachments/assets/8c36a9f9-86ea-4f68-91d1-e51746aa6573" />
 - Login
-- <img width="1920" height="1080" alt="login" src="https://github.com/user-attachments/assets/1a94e216-1bc0-46e1-81eb-43dce18975f5" />
+- <img width="572" height="472" alt="login" src="https://github.com/user-attachments/assets/fe0fbd29-2ba7-4495-a1ee-eb0a6608c2f7" />
 - Registration
-- <img width="1920" height="1080" alt="registration" src="https://github.com/user-attachments/assets/4cd233b9-4fab-4ead-af16-2d3625fb4f45" />
+- <img width="572" height="472" alt="registration" src="https://github.com/user-attachments/assets/9dffbfa7-ce72-48f8-8126-88ea7940a4e5" />
 - Product Listings
-- <img width="1920" height="1080" alt="product-listings" src="https://github.com/user-attachments/assets/ec1e96be-defd-4177-945a-a7e465e2bced" />
+- <img width="572" height="472" alt="listing product" src="https://github.com/user-attachments/assets/2184d9dc-d2dd-400d-9542-d136910c99d7" />
 - Advertisement Details
-- <img width="1920" height="1080" alt="advertisement-details" src="https://github.com/user-attachments/assets/d2a0597f-d72a-4add-be9b-31b2d689254f" />
+- <img width="572" height="472" alt="Advertisement Details" src="https://github.com/user-attachments/assets/2c8f9b4d-30f0-4f42-897b-e9b2bdee45ff" />
 - User Dashboard
-- <img width="1920" height="1080" alt="user-dashboard" src="https://github.com/user-attachments/assets/309a3f86-836f-4e82-968f-e9c299a2f706" />
+- <img width="572" height="472" alt="User Dashboard" src="https://github.com/user-attachments/assets/9099c94b-2ecc-40c9-880a-d4daa8bc3fbd" />
 
 
 ---
