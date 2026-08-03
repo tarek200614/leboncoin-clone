@@ -127,7 +127,6 @@ http://localhost:8888/leboncoin-clone/
 
 ## 📸 Screenshots
 
-
 - Home Page
 - <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/800d0d23-0f44-4b6e-a309-71915e70a520" />
 - Login
