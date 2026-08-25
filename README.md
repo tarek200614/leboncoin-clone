@@ -23,8 +23,22 @@ A fully interactive **static frontend demonstration** of the Le Bon Coin Clone i
 <p align="center">
 
 <a href="https://demo-green-phi-88.vercel.app/">
-  <img src="https://img.shields.io/badge/🛒%20Launch%20LeBonCoin%20Live%20Demo-2563EB?style=for-the-badge&logo=vercel&logoColor=white" alt="Launch LeBonCoin Live Demo">
+  <img src="https://img.shields.io/badge/🛒%20LEBONCOIN%20CLONE-LIVE%20DEMO-2563EB?style=for-the-badge&logo=vercel&logoColor=white" alt="LeBonCoin Clone Live Demo">
 </a>
+
+&nbsp;&nbsp;&nbsp;
+
+<a href="https://demo1-lake-seven.vercel.app/">
+  <img src="https://img.shields.io/badge/🚀%20QCM%20ANTI--CHEAT-LIVE%20DEMO-7C3AED?style=for-the-badge&logo=vercel&logoColor=white" alt="QCM Anti-Cheat Live Demo">
+</a>
+
+</p>
+
+<p align="center">
+  <sub>
+    Interactive browser-based demonstrations deployed with Vercel.
+  </sub>
+</p>
 
 
 The live demo reproduces the application's main user interfaces and workflows using **HTML5, CSS3, and Vanilla JavaScript**, without requiring a PHP runtime or MySQL database.
