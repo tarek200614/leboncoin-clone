@@ -21,11 +21,10 @@ It was developed to strengthen practical skills in full-stack web development us
 A fully interactive **static frontend demonstration** of the Le Bon Coin Clone is available online.
 
 <p align="center">
-
-<a href="https://demo-green-phi-88.vercel.app/">
-  <img src="https://img.shields.io/badge/🛒%20Launch%20LeBonCoin%20Live%20Demo-2563EB?style=for-the-badge&logo=vercel&logoColor=white" alt="Launch LeBonCoin Live Demo">
-</a>
-
+  <a href="YOUR_LEBONCOIN_LIVE_DEMO_URL">
+    <img src="https://img.shields.io/badge/▶%20LAUNCH%20LEBONCOIN%20LIVE%20DEMO-FF6A00?style=for-the-badge" alt="Launch Le Bon Coin Live Demo">
+  </a>
+</p>
 
 The live demo reproduces the application's main user interfaces and workflows using **HTML5, CSS3, and Vanilla JavaScript**, without requiring a PHP runtime or MySQL database.
 
