@@ -16,29 +16,49 @@ It was developed to strengthen practical skills in full-stack web development us
 
 ## 🌐 Live Demo
 
-> **🚀 Try the application directly in your browser**
+### 🚀 Interactive Frontend Demo
 
-**[▶️ Launch Live Demo](https://leboncoin-demo.vercel.app/)**
+A fully interactive **static frontend demonstration** of the Le Bon Coin Clone is available online.
 
-The live demo provides an interactive preview of the application's frontend and core user flows without requiring a local PHP/MySQL environment.
+👉 **[▶️ Launch Live Demo](YOUR_LIVE_DEMO_URL)**
 
-### Demo Features
+The live demo reproduces the application's main user interfaces and workflows using **HTML5, CSS3, and Vanilla JavaScript**, without requiring a PHP runtime or MySQL database.
 
-- 🏠 Landing page and navigation
-- 🔐 User authentication interface
-- 📝 Advertisement browsing and details
-- 🔍 Search and category navigation
-- 👤 User dashboard
-- 📱 Responsive interface
-- ⚡ Interactive frontend components
+### 🎯 Available Demo Features
 
-### Demo Environment
+- 🏠 Homepage and navigation
+- 🔍 Advertisement search and category filtering
+- 📋 Advertisement listings
+- 🖼️ Advertisement detail pages and image galleries
+- 👤 User authentication simulation
+- 📊 User dashboard
+- 📝 Advertisement creation, editing, and deletion
+- ❤️ Favorites management
+- 💬 Buyer–seller messaging simulation
+- 🛡️ Admin dashboard
+- 👥 User management and account status simulation
+- 📱 Responsive layouts for desktop, tablet, and mobile
+- 💾 Client-side state persistence using `localStorage`
 
-The public demo is provided for **portfolio and demonstration purposes**.  
-The complete PHP/MySQL application remains available in this repository and can be installed locally using the setup instructions below.
+### 🔐 Demo Accounts
 
-> **Note:** The live demo may use a static/demo frontend environment. Features requiring server-side PHP processing or MySQL persistence may not be available in the public demo.
+| Role | Email | Password |
+|------|-------|----------|
+| **Administrator** | `admin@demo.local` | `Demo1234!` |
+| **User** | `student@demo.local` | `Demo1234!` |
 
+> **Demo environment:** Authentication, advertisements, favorites, messaging, and administration features are simulated client-side for demonstration purposes. No production user data is processed.
+
+### 🏗️ Demo Architecture
+
+The live demonstration is intentionally isolated from the PHP/MySQL backend:
+
+```text
+demo/
+├── index.html      # Demo application interface
+├── style.css       # Responsive styling
+├── script.js       # SPA logic and interactive features
+└── assets/         # Images and static resources
 ---
 ## ✨ Features
 
