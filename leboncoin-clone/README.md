@@ -18,7 +18,7 @@ It was developed to strengthen practical skills in full-stack web development us
 
 > **🚀 Try the application live in your browser**
 
-**[▶️ Launch Live Demo](YOUR_LIVE_DEMO_URL)**
+**[▶️ Launch Live Demo](https://demo-green-phi-88.vercel.app/)**
 
 The public live demo provides an interactive client-side preview of the frontend and user workflows (located in `demo/`), hosted statically on GitHub Pages without requiring a local PHP/MySQL server environment.
 
