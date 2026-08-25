@@ -22,7 +22,7 @@ A fully interactive **static frontend demonstration** of the Le Bon Coin Clone i
 
 <p align="center">
   <a href="YOUR_LEBONCOIN_LIVE_DEMO_URL">
-    <img src="https://img.shields.io/badge/▶%20LAUNCH%20LEBONCOIN%20LIVE%20DEMO-FF6A00?style=for-the-badge" alt="Launch Le Bon Coin Live Demo">
+    <img src="https://img.shields.io/badge/▶%20LAUNCH%20LEBONCOIN%20LIVE%20DEMO-2563EB?style=for-the-badge" alt="Launch Le Bon Coin Live Demo">
   </a>
 </p>
 
