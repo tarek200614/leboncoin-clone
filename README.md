@@ -14,6 +14,32 @@ It was developed to strengthen practical skills in full-stack web development us
 
 ---
 
+## 🌐 Live Demo
+
+> **🚀 Try the application directly in your browser**
+
+**[▶️ Launch Live Demo](https://leboncoin-demo.vercel.app/)**
+
+The live demo provides an interactive preview of the application's frontend and core user flows without requiring a local PHP/MySQL environment.
+
+### Demo Features
+
+- 🏠 Landing page and navigation
+- 🔐 User authentication interface
+- 📝 Advertisement browsing and details
+- 🔍 Search and category navigation
+- 👤 User dashboard
+- 📱 Responsive interface
+- ⚡ Interactive frontend components
+
+### Demo Environment
+
+The public demo is provided for **portfolio and demonstration purposes**.  
+The complete PHP/MySQL application remains available in this repository and can be installed locally using the setup instructions below.
+
+> **Note:** The live demo may use a static/demo frontend environment. Features requiring server-side PHP processing or MySQL persistence may not be available in the public demo.
+
+---
 ## ✨ Features
 
 - 🔐 User Registration & Authentication
