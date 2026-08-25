@@ -59,6 +59,8 @@ demo/
 ├── style.css       # Responsive styling
 ├── script.js       # SPA logic and interactive features
 └── assets/         # Images and static resources
+```
+
 ---
 ## ✨ Features
 
@@ -173,19 +175,35 @@ http://localhost:8888/leboncoin-clone/
 
 ## 📸 Screenshots
 
-- Home Page
-- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/800d0d23-0f44-4b6e-a309-71915e70a520" />
-- Login
-- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/fe2af27f-8dec-4c38-b3a4-c91bd2f6ee37" />
-- Registration
-- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/57f8fe53-8279-44cf-a2a6-4e494d25ac36" />
-- Product Listings
-- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/a90877e3-7342-4360-8dea-2ae65cff4ac3" />
-- Advertisement Details
-- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/cf70beea-cf37-40a7-a8a9-f4a1bf1ae9f1" />
-- User Dashboard
-- <img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/54e7b74f-1f69-4025-9ca0-3a146c672d98" />
+# Home Page
+<p align="center">
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/800d0d23-0f44-4b6e-a309-71915e70a520" />
+</p>
+  
+# Login
+<p align="center">
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/fe2af27f-8dec-4c38-b3a4-c91bd2f6ee37" />
+</p>
+  
+# Registration
+<p align="center">
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/57f8fe53-8279-44cf-a2a6-4e494d25ac36" />
+</p>
 
+# Product Listings
+<p align="center">
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/a90877e3-7342-4360-8dea-2ae65cff4ac3" />
+</p>
+
+# Advertisement Details
+<p align="center">
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/cf70beea-cf37-40a7-a8a9-f4a1bf1ae9f1" />
+</p>
+
+# User Dashboard
+<p align="center">
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/54e7b74f-1f69-4025-9ca0-3a146c672d98" />
+</p>
 
 ---
 
